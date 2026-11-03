@@ -1,25 +1,39 @@
 {
   "expo": {
-    "name": "avx-wallet",
+    "name": "AVX Wallet",
     "slug": "avx-wallet",
-    "version": "1.0.0",
+    "scheme": "avxwallet",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0B0E14",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": false,
+      "bundleIdentifier": "com.avxwallet.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "AVX Wallet uses Face ID to unlock your wallet.",
+        "NSCameraUsageDescription": "AVX Wallet uses the camera to scan wallet address QR codes."
+      }
     },
     "android": {
+      "package": "com.avxwallet.app",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#0B0E14",
         "foregroundImage": "./assets/android-icon-foreground.png",
         "backgroundImage": "./assets/android-icon-background.png",
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
+      "permissions": ["android.permission.CAMERA", "android.permission.USE_BIOMETRIC"],
       "predictiveBackGestureEnabled": false
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      ["expo-secure-store", { "faceIDPermission": "AVX Wallet uses Face ID to unlock your wallet." }],
+      ["expo-camera", { "cameraPermission": "AVX Wallet uses the camera to scan wallet address QR codes." }],
+      "expo-router"
+    ]
   }
 }
