@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Switch, Text, View } from 'react-native';
+import { Platform, Pressable, Switch, Text, View } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { usePreventScreenCapture } from 'expo-screen-capture';
 import { Btn, C, Card, Notice, PinPad, Screen, T } from '../src/ui';
 import { useWallet } from '../src/WalletContext';
+import { confirmAction } from '../src/confirm';
 import { NETWORKS, type NetworkConfig } from '../src/lib/networks';
 import { settings } from '../src/lib/storage';
 import { readMnemonic, verifyPin } from '../src/lib/vault';
@@ -77,10 +78,9 @@ export default function Settings() {
             onPress={() => {
               if (sel) return;
               if (!n.isTestnet) {
-                Alert.alert('Switch to mainnet?', 'Mainnet uses REAL money. Transactions cannot be undone.', [
-                  { text: 'Cancel', style: 'cancel' },
-                  { text: 'Switch', onPress: () => setNetwork(k) },
-                ]);
+                confirmAction('Switch to mainnet?', 'Mainnet uses REAL money. Transactions cannot be undone.', 'Switch', () =>
+                  setNetwork(k),
+                );
               } else setNetwork(k);
             }}
           >
@@ -99,7 +99,7 @@ export default function Settings() {
       <Card style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ flex: 1 }}>
           <Text style={T.body}>Unlock with biometrics</Text>
-          <Text style={T.sub}>{bioAvailable ? 'Fingerprint / Face ID' : 'Not set up on this phone'}</Text>
+          <Text style={T.sub}>{bioAvailable ? 'Fingerprint / Face ID' : Platform.OS === 'web' ? 'Available in the mobile app' : 'Not set up on this phone'}</Text>
         </View>
         <Switch
           value={bio}
@@ -119,16 +119,15 @@ export default function Settings() {
 
       <Text style={T.h2}>Danger zone</Text>
       <Btn
-        title="Remove wallet from this phone"
+        title={`Remove wallet from this ${Platform.OS === 'web' ? 'browser' : 'phone'}`}
         kind="danger"
         onPress={() =>
-          Alert.alert(
+          confirmAction(
             'Remove wallet?',
-            'This deletes the wallet from this phone. Without your recovery phrase your funds are lost forever. Make sure you have it written down.',
-            [
-              { text: 'Cancel', style: 'cancel' },
-              { text: 'Remove', style: 'destructive', onPress: removeWallet },
-            ],
+            `This deletes the wallet from this ${Platform.OS === 'web' ? 'browser' : 'phone'}. Without your recovery phrase your funds are lost forever. Make sure you have it written down.`,
+            'Remove',
+            removeWallet,
+            true,
           )
         }
       />

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Share, Text, View } from 'react-native';
+import { Platform, Share, Text, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 import * as Clipboard from 'expo-clipboard';
 import { Btn, Card, Notice, Screen, T } from '../src/ui';
@@ -32,11 +32,16 @@ export default function Receive() {
           setTimeout(() => setCopied(false), 1500);
         }}
       />
-      <Btn
-        title="Share"
-        kind="secondary"
-        onPress={() => Share.share({ message: `My ${network.name} (BEP-20) address: ${address}` })}
-      />
+      {/* Browsers without a share sheet (most desktops) only get the Copy button. */}
+      {Platform.OS !== 'web' || (typeof navigator !== 'undefined' && 'share' in navigator) ? (
+        <Btn
+          title="Share"
+          kind="secondary"
+          onPress={() =>
+            Share.share({ message: `My ${network.name} (BEP-20) address: ${address}` }).catch(() => {})
+          }
+        />
+      ) : null}
     </Screen>
   );
 }

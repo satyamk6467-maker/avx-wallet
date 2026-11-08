@@ -19,6 +19,7 @@ send with PIN-confirmed, on-device signing — in the spirit of Trust Wallet.
 | Send | Asset picker, QR scanner, MAX button, fee preview, contract-recipient warning, PIN re-confirmation, live confirmation status, BscScan link |
 | Custom tokens | Paste a contract address → name/symbol/decimals read on-chain |
 | Security | PIN (PBKDF2-hashed), biometric unlock, brute-force lockout, auto-lock, screenshot blocking on phrase screens |
+| Website | Same wallet in the browser, phrase encrypted with AES-256-GCM + PBKDF2 (see below) |
 | Networks | BNB Chain Testnet (default, safe for demos) and Mainnet, with a confirmation before switching to real money |
 
 ## Architecture
@@ -83,10 +84,32 @@ npm i -g eas-cli
 eas build -p android --profile preview
 ```
 
+## Website version
+
+The same codebase also runs as a website (React Native Web), so people can use AVX Wallet in a
+browser as well as on their phone.
+
+```bash
+npx expo start --web      # local dev in the browser
+npm run build:web         # static site in dist/ (deployed to Vercel via vercel.json)
+```
+
+How the website keeps keys safe (`src/lib/vault.web.ts`, picked automatically on web):
+
+- Browsers have no hardware keystore, so the recovery phrase is **encrypted with AES-256-GCM** using a key
+  derived from the PIN with **PBKDF2-SHA256 (600,000 iterations)** via the browser's WebCrypto API.
+- Only `{salt, iv, ciphertext}` is saved in browser storage — never the phrase or the PIN.
+- The unlock key is non-extractable and lives in memory only; locking or reloading the page drops it.
+- Same brute-force lockout as the app; confirmations use the browser's dialog on web.
+
+Website limitations: a 6-digit PIN protects the browser copy less strongly than the phone's hardware
+keystore (someone who copies the browser's storage could try all PINs offline, slowly), and biometric
+unlock is mobile-only. For large amounts, use the mobile app.
+
 ## Tests
 
 ```bash
-npm test          # 10 unit tests: key derivation vectors, phrase validation, amount formatting,
+npm test          # unit tests (incl. web vault encryption/lockout): key derivation vectors, phrase validation, amount formatting,
                   # QR parsing, BNB + BEP-20 transaction building against a mocked chain
 npm run typecheck
 ```

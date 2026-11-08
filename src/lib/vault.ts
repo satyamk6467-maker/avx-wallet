@@ -76,3 +76,6 @@ export async function wipeWallet(): Promise<void> {
   await SecureStore.deleteItemAsync(K_PIN, opts);
   await SecureStore.deleteItemAsync(K_FAILS, opts);
 }
+
+/** No-op on mobile (the keystore needs no in-memory key). The web vault drops its key here. */
+export function forgetUnlockKey(): void {}

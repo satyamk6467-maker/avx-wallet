@@ -2,7 +2,7 @@
 import 'react-native-get-random-values';
 
 import { useEffect } from 'react';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, Platform, View } from 'react-native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -63,7 +63,16 @@ export default function RootLayout() {
     <SafeAreaProvider>
       <WalletProvider>
         <StatusBar style="light" />
-        <Guard />
+        {Platform.OS === 'web' ? (
+          // On laptops/desktops, keep the app phone-width and centred instead of full-screen.
+          <View style={{ flex: 1, backgroundColor: C.bg, alignItems: 'center' }}>
+            <View style={{ flex: 1, width: '100%', maxWidth: 480 }}>
+              <Guard />
+            </View>
+          </View>
+        ) : (
+          <Guard />
+        )}
       </WalletProvider>
     </SafeAreaProvider>
   );

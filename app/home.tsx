@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Alert, Linking, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
+import { Linking, Pressable, RefreshControl, ScrollView, Text, View } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { C, Card, Notice, T } from '../src/ui';
 import { useWallet } from '../src/WalletContext';
+import { confirmAction } from '../src/confirm';
 import { assetKey, loadAssets, type Asset } from '../src/lib/chain';
 import { getCustomTokens, getHistory, removeCustomToken, type HistoryItem } from '../src/lib/storage';
 import { shortAddress } from '../src/lib/wallet';
@@ -106,17 +107,10 @@ export default function Home() {
               onPress={() => router.push({ pathname: '/send', params: { asset: assetKey(a) } })}
               onLongPress={() => {
                 if (!a.custom) return;
-                Alert.alert(`Hide ${a.symbol}?`, 'You can add it again any time.', [
-                  { text: 'Cancel', style: 'cancel' },
-                  {
-                    text: 'Hide',
-                    style: 'destructive',
-                    onPress: async () => {
-                      await removeCustomToken(network.chainId, a.address!);
-                      refresh();
-                    },
-                  },
-                ]);
+                confirmAction(`Hide ${a.symbol}?`, 'You can add it again any time.', 'Hide', async () => {
+                  await removeCustomToken(network.chainId, a.address!);
+                  refresh();
+                }, true);
               }}
             >
               <Card style={{ flexDirection: 'row', alignItems: 'center', gap: 12 }}>
