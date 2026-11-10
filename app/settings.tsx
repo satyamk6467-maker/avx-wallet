@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { Alert, Pressable, Switch, Text, View } from 'react-native';
+import { Alert, Platform, Pressable, Switch, Text, View } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
-import { usePreventScreenCapture } from 'expo-screen-capture';
+import { useNoScreenshots } from '../src/lib/noScreenshots';
 import { Btn, C, Card, Notice, PinPad, Screen, T } from '../src/ui';
 import { useWallet } from '../src/WalletContext';
 import { NETWORKS, type NetworkConfig } from '../src/lib/networks';
@@ -9,7 +9,7 @@ import { settings } from '../src/lib/storage';
 import { readMnemonic, verifyPin } from '../src/lib/vault';
 
 function PhraseView({ phrase, onHide }: { phrase: string; onHide: () => void }) {
-  usePreventScreenCapture(); // blocks screenshots/recording while the phrase is visible
+  useNoScreenshots(); // blocks screenshots/recording while the phrase is visible
   return (
     <Screen>
       <Notice tone="red" text="Never share these words. AVX Wallet support will never ask for them." />
@@ -39,7 +39,7 @@ export default function Settings() {
   useEffect(() => {
     (async () => {
       setBio(await settings.getBiometric());
-      setBioAvailable((await LocalAuthentication.hasHardwareAsync()) && (await LocalAuthentication.isEnrolledAsync()));
+      setBioAvailable(Platform.OS !== 'web' && (await LocalAuthentication.hasHardwareAsync()) && (await LocalAuthentication.isEnrolledAsync()));
     })();
   }, []);
 
@@ -96,6 +96,7 @@ export default function Settings() {
       })}
 
       <Text style={T.h2}>Security</Text>
+      {Platform.OS !== 'web' ? (
       <Card style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
         <View style={{ flex: 1 }}>
           <Text style={T.body}>Unlock with biometrics</Text>
@@ -114,6 +115,7 @@ export default function Settings() {
           }}
         />
       </Card>
+      ) : null}
       <Btn title="Show recovery phrase" kind="secondary" onPress={() => setAskPin('phrase')} />
       <Btn title="Lock wallet now" kind="secondary" onPress={lock} />
 

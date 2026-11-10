@@ -2,7 +2,7 @@
 import { useMemo, useState } from 'react';
 import { Pressable, Text, View } from 'react-native';
 import { useRouter } from 'expo-router';
-import { usePreventScreenCapture } from 'expo-screen-capture';
+import { useNoScreenshots } from '../src/lib/noScreenshots';
 import { Btn, C, Card, Notice, Screen, T } from '../src/ui';
 import { useWallet } from '../src/WalletContext';
 
@@ -15,7 +15,7 @@ function pickChecks(count: number): number[] {
 export default function CreateWallet() {
   const router = useRouter();
   const { pendingMnemonic } = useWallet();
-  usePreventScreenCapture(); // no screenshots while the phrase can be on screen
+  useNoScreenshots(); // no screenshots while the phrase can be on screen
   const words = useMemo(() => pendingMnemonic?.split(' ') ?? [], [pendingMnemonic]);
   const [revealed, setRevealed] = useState(false);
   const [step, setStep] = useState<'show' | 'verify'>('show');

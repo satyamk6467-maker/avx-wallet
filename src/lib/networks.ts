@@ -59,7 +59,7 @@ export const NETWORKS: Record<NetworkConfig['key'], NetworkConfig> = {
 };
 
 // Start on testnet so nobody risks real money while trying the app.
-export const DEFAULT_NETWORK: NetworkConfig['key'] = 'bscTestnet';
+export const DEFAULT_NETWORK: NetworkConfig['key'] = 'bsc';
 
 // Standard Ethereum/BNB Chain derivation path (same as Trust Wallet & MetaMask),
 // so a seed phrase imported here shows the same address as in those wallets.

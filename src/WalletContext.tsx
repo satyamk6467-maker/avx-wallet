@@ -46,6 +46,7 @@ export function WalletProvider({ children }: { children: React.ReactNode }) {
 
   const lock = useCallback(() => {
     setSigner(null); // drop the private key from memory
+    vault.forgetKey(); // web: drop the vault decryption key too
     setStatus((s) => (s === 'unlocked' ? 'locked' : s));
   }, []);
 

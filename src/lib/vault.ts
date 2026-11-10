@@ -71,6 +71,9 @@ export async function readMnemonic(): Promise<string | null> {
   return SecureStore.getItemAsync(K_MNEMONIC, opts);
 }
 
+/** Native keeps nothing extra in memory; the signer is dropped by WalletContext. */
+export function forgetKey(): void {}
+
 export async function wipeWallet(): Promise<void> {
   await SecureStore.deleteItemAsync(K_MNEMONIC, opts);
   await SecureStore.deleteItemAsync(K_PIN, opts);

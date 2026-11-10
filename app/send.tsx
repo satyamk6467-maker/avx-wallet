@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Linking, Modal, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
+import { Linking, Modal, Platform, Pressable, ScrollView, Text, TextInput, View } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { formatUnits } from 'ethers';
@@ -220,6 +220,7 @@ export default function Send() {
           autoCorrect={false}
           style={inputStyle}
         />
+        {Platform.OS !== 'web' ? (
         <Pressable
           onPress={async () => {
             if (!perm?.granted && !(await requestPerm()).granted) return;
@@ -229,6 +230,7 @@ export default function Send() {
         >
           <Text style={{ color: C.text, fontSize: 20 }}>⌗</Text>
         </Pressable>
+        ) : null}
       </View>
 
       <Text style={T.sub}>Amount</Text>

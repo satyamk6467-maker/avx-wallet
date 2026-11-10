@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { Pressable, Text, View } from 'react-native';
+import { Platform, Pressable, Text, View } from 'react-native';
 import * as LocalAuthentication from 'expo-local-authentication';
 import { C, PinPad, Screen, T } from '../src/ui';
 import { useWallet } from '../src/WalletContext';
@@ -26,7 +26,7 @@ export default function Unlock() {
   useEffect(() => {
     (async () => {
       const enabled = await settings.getBiometric();
-      const ok = enabled && (await LocalAuthentication.hasHardwareAsync()) && (await LocalAuthentication.isEnrolledAsync());
+      const ok = Platform.OS !== 'web' && enabled && (await LocalAuthentication.hasHardwareAsync()) && (await LocalAuthentication.isEnrolledAsync());
       setBioOn(ok);
       if (ok) tryBiometric();
     })();
